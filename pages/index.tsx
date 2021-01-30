@@ -1,53 +1,76 @@
-import Head from 'next/head'
-import { styled } from '../stitches.config'
-import StitchesLogo from '../components/StitchesLogo'
+import Head from "next/head";
+import { darkTheme, styled } from "../stitches.config";
+import StitchesLogo from "../components/StitchesLogo";
+import { useDarkMode } from "../hooks/useDarkMode";
 
-const Box = styled('div', {})
+const Body = styled("div", {
+  backgroundColor: "$loContrast",
+  color: "$hiContrast",
 
-const Text = styled('p', {
-  fontFamily: '$system',
-  color: '$hiContrast',
-})
+  height: "100%",
+  minHeight: "100vh",
+  margin: 0,
+});
 
-const Link = styled('a', {
-  fontFamily: '$system',
-  textDecoration: 'none',
-  color: '$purple600',
-})
-
-const Container = styled('div', {
-  marginX: 'auto',
-  paddingX: '$3',
-
+const Text = styled("p", {
+  fontFamily: "$system",
   variants: {
-    size: {
-      '1': {
-        maxWidth: '300px',
+    align: {
+      left: {
+        textAlign: "left",
       },
-      '2': {
-        maxWidth: '585px',
+      center: {
+        textAlign: "center",
       },
-      '3': {
-        maxWidth: '865px',
+      right: {
+        textAlign: "right",
       },
     },
   },
-})
+});
+
+const Link = styled("a", {
+  fontFamily: "$system",
+  textDecoration: "none",
+  color: "$purple600",
+});
+
+const Container = styled("div", {
+  marginX: "auto",
+  paddingX: "$3",
+
+  variants: {
+    size: {
+      "1": {
+        maxWidth: "300px",
+      },
+      "2": {
+        maxWidth: "585px",
+      },
+      "3": {
+        maxWidth: "865px",
+      },
+    },
+  },
+});
 
 export default function Home() {
+  const { darkMode, toggleDarkMode } = useDarkMode();
   return (
-    <Box css={{ paddingY: '$6' }}>
+    <Body className={darkMode ? darkTheme : ""}>
       <Head>
-        <title>Use Stitches with Next.js</title>
+        <title>Movie Search</title>
       </Head>
-      <Container size={{ initial: '1', bp1: '2' }}>
-        <StitchesLogo />
-        <Text as="h1">Hello, from Stitches.</Text>
+      <Container size={{ initial: "1", md: "2", lg: "3" }}>
+        <Text as="h1" align="center" css={{ marginTop: 0, paddingTop: "$8" }}>
+          Movie Search
+        </Text>
         <Text>
-          For full documentation, visit{' '}
+          For full documentation, visit{" "}
           <Link href="https://stitches.dev">stitches.dev</Link>.
         </Text>
+        <button onClick={toggleDarkMode}>Toggle dark mode</button>
       </Container>
-    </Box>
-  )
+    </Body>
+  );
 }
