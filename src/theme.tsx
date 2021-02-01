@@ -1,4 +1,9 @@
-import { extendTheme, ThemeOverride, theme } from "@chakra-ui/react";
+import {
+  extendTheme,
+  ThemeOverride,
+  theme as chakraTheme,
+  useTheme as useChakraTheme,
+} from "@chakra-ui/react";
 import { createBreakpoints } from "@chakra-ui/theme-tools";
 
 const fonts = { mono: `'Menlo', monospace` };
@@ -16,16 +21,37 @@ const config: ThemeOverride["config"] = {
 };
 
 export const themeObj = {
-  ...theme,
+  ...chakraTheme,
   config,
   colors: {
-    ...theme.colors,
+    ...chakraTheme.colors,
     black: "#222f3e",
+  },
+  components: {
+    ...chakraTheme.components,
+    Container: {
+      ...chakraTheme.components.Container,
+      sizes: {
+        sm: {
+          maxWidth: "60ch",
+        },
+        md: {
+          maxWidth: {
+            maxWidth: "80ch",
+          },
+        },
+      },
+      defaultProps: {
+        size: "md",
+      },
+    },
   },
   fonts,
   breakpoints,
 };
 
 const customTheme = extendTheme(themeObj);
+
+export const useCustomTheme = () => useChakraTheme<typeof themeObj>();
 
 export default customTheme;
