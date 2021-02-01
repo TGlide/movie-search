@@ -26,12 +26,14 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { Locale } from "../entities/Locale";
 import { Movie } from "../entities/Movie";
 import { titleCase } from "../utils/titleCase";
 import { twoWayBind } from "../utils/twoWayBind";
 
 type MovieListProps = {
   movies: Movie[];
+  searchLocale: keyof typeof Locale;
 };
 
 type Sort = {
@@ -39,7 +41,10 @@ type Sort = {
   ascending: boolean;
 };
 
-const MovieList: React.FC<MovieListProps> = ({ movies: propMovies }) => {
+const MovieList: React.FC<MovieListProps> = ({
+  movies: propMovies,
+  searchLocale,
+}) => {
   const [sort, setSort] = useState<Sort>({ key: "title", ascending: true });
   const [search, setSearch] = useState("");
   const [movies, setMovies] = useState(propMovies);
@@ -75,7 +80,9 @@ const MovieList: React.FC<MovieListProps> = ({ movies: propMovies }) => {
         const movie = movies[idx];
 
         try {
-          const res = await fetch(`/api/justwatch?title=${movie.title}`);
+          const res = await fetch(
+            `/api/justwatch?title=${movie.title}&locale=${searchLocale}`
+          );
           const json = await res.json();
           movie.onNetflix = json.onNetflix;
           movie.poster = json.poster;
@@ -86,8 +93,15 @@ const MovieList: React.FC<MovieListProps> = ({ movies: propMovies }) => {
         setMovies(newMovies);
       }
     }
+    setMovies(
+      movies.map((movie) => ({
+        ...movie,
+        onNetflix: undefined,
+        poster: undefined,
+      }))
+    );
     fetchNetflix();
-  }, []);
+  }, [searchLocale]);
 
   const renderNetflixStatus = (movie: Movie) => {
     if (movie.onNetflix === null) return <QuestionIcon />;

@@ -7,8 +7,8 @@ export default async function handler(
 ) {
   if (req.method !== "GET") return res.status(404).send("Not found.");
 
-  const { title } = req.query;
-  if (!title) return res.status(400).json({ error: "Missing title" });
+  const { title, locale } = req.query;
+  if (!title || !locale) return res.status(400).json({ error: "Missing args" });
 
   const body = {
     page_size: 5,
@@ -19,7 +19,7 @@ export default async function handler(
 
   try {
     const jwRes = await fetch(
-      `https://apis.justwatch.com/content/titles/pt_PT/popular?language=en&body=${JSON.stringify(
+      `https://apis.justwatch.com/content/titles/${locale}/popular?language=en&body=${JSON.stringify(
         body
       )}`
     );
