@@ -50,6 +50,9 @@ const MovieList: React.FC<MovieListProps> = ({ movies: propMovies }) => {
       if (sort.key === "title") {
         return a.title.localeCompare(b.title) * sortMultiplier;
       }
+      if (sort.key === "onNetflix") {
+        return ((a.onNetflix ? 1 : 0) - (b.onNetflix ? 1 : 0)) * sortMultiplier;
+      }
       return 0;
     },
     [sort]
@@ -114,15 +117,24 @@ const MovieList: React.FC<MovieListProps> = ({ movies: propMovies }) => {
                 opacity: 0.75,
                 cursor: "pointer",
               }}
+              onClick={() =>
+                setSort({ key: "onNetflix", ascending: !sort.ascending })
+              }
             >
-              Netflix
+              <Flex>
+                {sort.key === "onNetflix" &&
+                  (sort.ascending ? <ChevronUpIcon /> : <ChevronDownIcon />)}
+                <Text>netflix</Text>
+              </Flex>
             </Th>
             <Th
               _hover={{
                 opacity: 0.75,
                 cursor: "pointer",
               }}
-              onClick={() => setSort({ ...sort, ascending: !sort.ascending })}
+              onClick={() =>
+                setSort({ key: "title", ascending: !sort.ascending })
+              }
             >
               <Flex>
                 {sort.key === "title" &&
