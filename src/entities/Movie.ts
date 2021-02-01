@@ -1,4 +1,5 @@
 export type Movie = {
   title: string;
-  onNetflix?: boolean;
+  onNetflix?: boolean | null;
+  poster?: string;
 };

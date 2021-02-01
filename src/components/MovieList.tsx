@@ -1,7 +1,9 @@
 import {
+  CheckIcon,
   ChevronDownIcon,
   ChevronUpIcon,
   CloseIcon,
+  QuestionIcon,
   SearchIcon,
 } from "@chakra-ui/icons";
 import {
@@ -9,9 +11,11 @@ import {
   Flex,
   FormControl,
   FormLabel,
+  Image,
   Input,
   InputGroup,
   InputRightElement,
+  Spinner,
   Table,
   Tbody,
   Td,
@@ -21,7 +25,7 @@ import {
   theme,
   Tr,
 } from "@chakra-ui/react";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Movie } from "../entities/Movie";
 import { titleCase } from "../utils/titleCase";
 import { twoWayBind } from "../utils/twoWayBind";
@@ -35,9 +39,10 @@ type Sort = {
   ascending: boolean;
 };
 
-const MovieList: React.FC<MovieListProps> = ({ movies }) => {
+const MovieList: React.FC<MovieListProps> = ({ movies: propMovies }) => {
   const [sort, setSort] = useState<Sort>({ key: "title", ascending: true });
   const [search, setSearch] = useState("");
+  const [movies, setMovies] = useState(propMovies);
 
   const sortFunction = useCallback(
     (a: Movie, b: Movie) => {
@@ -56,7 +61,38 @@ const MovieList: React.FC<MovieListProps> = ({ movies }) => {
       .filter((movie) =>
         movie.title.toLowerCase().includes(search.toLowerCase())
       );
-  }, [sort, search]);
+  }, [sort, search, movies]);
+
+  useEffect(() => {
+    async function fetchNetflix() {
+      const total = movies.length;
+
+      for (let idx = 0; idx < total; idx++) {
+        const newMovies = movies.slice();
+        const movie = movies[idx];
+
+        try {
+          const res = await fetch(`/api/justwatch?title=${movie.title}`);
+          const json = await res.json();
+          movie.onNetflix = json.onNetflix;
+          movie.poster = json.poster;
+        } catch {
+          movie.onNetflix = null;
+        }
+        newMovies[idx] = movie;
+        setMovies(newMovies);
+      }
+    }
+    fetchNetflix();
+  }, []);
+
+  const renderNetflixStatus = (movie: Movie) => {
+    if (movie.onNetflix === null) return <QuestionIcon />;
+    if (movie.onNetflix === undefined) return <Spinner boxSize="0.75rem" />;
+    if (!movie.onNetflix)
+      return <CloseIcon boxSize="0.75rem" color={theme.colors.red[300]} />;
+    return <CheckIcon color={theme.colors.green[300]} />;
+  };
 
   return (
     <Box py={8}>
@@ -99,11 +135,24 @@ const MovieList: React.FC<MovieListProps> = ({ movies }) => {
         <Tbody>
           {sortedMovies.map((movie) => {
             return (
-              <Tr key={movie.title}>
+              <Tr key={JSON.stringify(movie)}>
+                <Td>{renderNetflixStatus(movie)}</Td>
                 <Td>
-                  <CloseIcon boxSize="0.75rem" color={theme.colors.red[300]} />
+                  <Flex alignItems="center">
+                    {movie.poster && (
+                      <Image
+                        src={movie.poster}
+                        alt={movie.title}
+                        borderRadius={4}
+                        w="5rem"
+                        h="7rem"
+                        mr="1rem"
+                      />
+                    )}
+
+                    <Text>{titleCase(movie.title)}</Text>
+                  </Flex>
                 </Td>
-                <Td>{titleCase(movie.title)}</Td>
               </Tr>
             );
           })}
