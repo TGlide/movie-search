@@ -10,7 +10,6 @@ import {
   Box,
   Flex,
   FormControl,
-  FormLabel,
   Image,
   Input,
   InputGroup,
