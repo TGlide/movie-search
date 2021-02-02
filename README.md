@@ -34,8 +34,6 @@
 -   Frontend
     -   [Next JS](#319795)
     -   [Typescript](https://www.typescriptlang.org/)
--   Tests
-    -   [Cypress](https://www.cypress.io/)
 -   Styling
     -   [Chakra UI](https://chakra-ui.com/)
 -   Extra packages
