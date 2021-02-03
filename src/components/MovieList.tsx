@@ -63,6 +63,9 @@ const MovieList: React.FC<MovieListProps> = ({
           ((a.onNetflix ? 1 : 0) - (b.onNetflix ? 1 : 0)) * -sortMultiplier
         );
       }
+      if (sort.key === "rating") {
+        return ((a.rating || 0) - (b.rating || 0)) * sortMultiplier;
+      }
       return 0;
     },
     [sort]
@@ -102,6 +105,7 @@ const MovieList: React.FC<MovieListProps> = ({
           const json = await res.json();
           movie.onNetflix = json.onNetflix;
           movie.poster = json.poster;
+          movie.rating = json.rating;
         } catch {
           movie.onNetflix = null;
         } finally {
@@ -111,7 +115,7 @@ const MovieList: React.FC<MovieListProps> = ({
       }
     }
     setMovies(
-      movies.map((movie) => ({
+      movies.slice().map((movie) => ({
         ...movie,
         onNetflix: undefined,
         poster: undefined,
@@ -184,6 +188,19 @@ const MovieList: React.FC<MovieListProps> = ({
                 <Text>Title</Text>
               </Flex>
             </Th>
+            <Th
+              _hover={{
+                opacity: 0.75,
+                cursor: "pointer",
+              }}
+              onClick={() => toggleSort("rating")}
+            >
+              <Flex>
+                {sort.key === "rating" &&
+                  (sort.ascending ? <ChevronUpIcon /> : <ChevronDownIcon />)}
+                <Text>Rating</Text>
+              </Flex>
+            </Th>
           </Tr>
         </Thead>
         <Tbody>
@@ -207,6 +224,7 @@ const MovieList: React.FC<MovieListProps> = ({
                     <Text>{titleCase(movie.title)}</Text>
                   </Flex>
                 </Td>
+                <Td>{movie.rating}</Td>
               </Tr>
             );
           })}

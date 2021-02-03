@@ -35,7 +35,10 @@ export default async function handler(
           "s332"
         )}`
       : undefined;
-    return res.status(200).json({ onNetflix, poster });
+    const rating = movie.scoring.filter(
+      (score) => score.provider_type === "imdb:score"
+    )[0]?.value;
+    return res.status(200).json({ onNetflix, poster, rating });
   } catch (e) {
     console.error(e);
     return res.status(400).json({ error: "Couldn't fetch netflix status" });
